@@ -161,6 +161,12 @@ module Permissions
     else
       return false
     end
+    contributors = whitelist["contributors"] # Contributors array for join command
+    if contributors.include?(userid) # If the list of contribs includes our user
+      return false # Already invited, #{redditUser}, go check inbox and accept invite
+    else
+      return true # Send contributor invite
+    end
 
   end
 
