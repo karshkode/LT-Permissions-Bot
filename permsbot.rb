@@ -63,19 +63,13 @@ def invite_user(accesstoken, redditUser, slug, permissions) # Invites a user to 
 end
 
 def lead_user(accesstoken, redditUser, slug) # Gives a user all permissions
-  uri = URI.parse("https://www.oauth.reddit.com/api/live/#{slug}/invite_contributor/")
 
-  request = Net::HTTP::Post.new(uri.path)
+  uri = URI.parse("https://www.oauth.reddit.com/api/live/#{slug}/contributors/")
+
+  request = Net::HTTP::Get.new(uri.path)
 
   request.add_field("Authorization", "bearer #{accesstoken}") # Uses our access token for OAuth2
-  request.add_field("Content-Type", "application/json")
-
-  request.form_data = {
-    "api_type" => "json",
-    "name" => redditUser,
-    "permissions" => "+update,+edit,+manage,+close,+settings,+invite",
-    "type" => "liveupdate_contributor_invite"
-  }
+  #request.add_field("Content-Type", "application/json")
 
   response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
     http.request(request)
@@ -84,7 +78,7 @@ def lead_user(accesstoken, redditUser, slug) # Gives a user all permissions
 end
 
 SlackRubyBot::Client.logger.level = Logger::WARN
-SLACK_API_TOKEN = "xoxb-196940761536-tjTuUeTiXZioYTnwuADLEFsc"
+
 class Perms < SlackRubyBot::Bot
   refreshtoken = $config["refresh_token"]
   command 'add' do |client, data, msg| # livebot add <slug> <user> <perms>
