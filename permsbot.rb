@@ -5,7 +5,7 @@ require 'json'
 require 'openssl'
 require 'yaml'
 
-config = YAML.load_file('config.yaml') # Load for all secret keys and tokens
+$config = YAML.load_file('config.yaml') # Load for all secret keys and tokens
 
 OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 def refreshtoken(refreshtoken) # Refreshes the token, needs to be called every hour, given the refreshtoken OR every time the perms bot command is called
