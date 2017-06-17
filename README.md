@@ -18,7 +18,7 @@ With the client_id and secret_key coming from your Reddit app, and the refresh_t
 To run,
 
 ```
-SLACK_API_TOKEN = ... bundle exec ruby permsbot.rb
+SLACK_API_TOKEN=... bundle exec ruby permsbot.rb
 ```
 
 With ... obviously being replaced by your Slack API token.
