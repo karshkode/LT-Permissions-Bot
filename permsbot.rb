@@ -86,6 +86,7 @@ class Perms < SlackRubyBot::Bot
     puts redditUser
     accesstoken = refreshtoken(refreshtoken)
     invite_user(accesstoken, redditUser, slug, permissions)
+    end
 end
 
 Perms.run
