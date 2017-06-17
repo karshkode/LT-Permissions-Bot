@@ -105,6 +105,7 @@ def lead_user(accesstoken, redditUser, slug)
   end
 
   permissions = "+update,+edit,+manage,+close,+settings,+invite" # Full perms
+  #would using [all] suffice as full perms?
 
   # This gives us a list of contributors so we can check if the redditUser is there
   if contributors.include? redditUser # If the user is already a contributor
