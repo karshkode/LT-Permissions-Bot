@@ -151,5 +151,17 @@ module Permissions
 
     puts "#{response} in #{__method__}"
   end
+  
+  def self.user_check(userid)
+
+    whitelist = YAML.load_file('whitelist.yaml') # Load up our whitelist
+    admins = whitelist["admins"] # Load in our admins array
+    if admins.include?(userid) # If the list of admins includes our user
+      return true
+    else
+      return false
+    end
+
+  end
 
 end
