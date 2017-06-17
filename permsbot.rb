@@ -11,7 +11,7 @@ OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 def refreshtoken(refreshtoken) # Refreshes the token, needs to be called every hour, given the refreshtoken OR every time the perms bot command is called
   uri = URI.parse("https://www.reddit.com/api/v1/access_token")
   request = Net::HTTP::Post.new(uri)
-  request.basic_auth(config["client_id"], config["secret_key"]) # client_id, client_secret
+  request.basic_auth(config["client_id"], config["clienet_secret"]) # client_id, client_secret
   request.set_form_data(
     "grant_type" => "refresh_token",
     "refresh_token" => refreshtoken,
@@ -67,7 +67,7 @@ SLACK_API_TOKEN = config["slack_token"]
 
 
 class Perms < SlackRubyBot::Bot
-  refreshtoken = config["slack_refresh"]
+  refreshtoken = config["refresh_token"]
   command 'add' do |client, data, msg|
     msg = msg.to_s.match(/.* (.*?) (.*) (.*)/)
     slug = msg[1]
