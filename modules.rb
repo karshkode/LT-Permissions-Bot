@@ -104,7 +104,7 @@ module Permissions
       end
     end
 
-    permissions = "+update,+edit,+manage,+close,+settings,+invite" # Full perms
+    permissions = "+all" # Full perms
 
     # This gives us a list of contributors so we can check if the redditUser is there
     if contributors.include? redditUser # If the user is already a contributor
