@@ -63,7 +63,7 @@ def invite_user(accesstoken, redditUser, slug, permissions) # Invites a user to 
 end
 
 SlackRubyBot::Client.logger.level = Logger::WARN
-SLACK_API_TOKEN = $config["slack_token"]
+
 
 
 class Perms < SlackRubyBot::Bot
