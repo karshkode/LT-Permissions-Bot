@@ -14,7 +14,7 @@ OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 def refreshtoken(refreshtoken)
   # Refreshes the token, needs to be called every hour, given the refreshtoken OR every time the perms bot command is called
   uri = URI.parse("https://www.reddit.com/api/v1/access_token")
-  request = Net::HTTP::Post.new(uri)
+  request = Net::HTTP::Post.new(uri.path, {'User-Agent' => 'desktop:com.VolunteerLiveTeam.livebot:v1.0.0 (by /u/everyboysfantasy)'})
   request.basic_auth($config["client_id"], $config["client_secret"]) # client_id, client_secret
   request.set_form_data(
     "grant_type" => "refresh_token",
@@ -22,22 +22,23 @@ def refreshtoken(refreshtoken)
     "redirect_uri" => "http://localhost",
   )
 
-  response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
-    tries = 0
-    begin
+  tries = 0
+  begin
+    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
       http.request(request)
-    rescue Net::HTTPTooManyRequests => error
-      tries += 1
-      if tries < 3
-        puts "#{error.message}"
-        sleep(10)
-        retry
-      else
-        puts "Exiting after 3 attemps"
-        abort
-      end
+    end
+  rescue Net::HTTPTooManyRequests => error
+    tries += 1
+    if tries < 3
+      puts "#{error.message}"
+      sleep(10)
+      retry
+    else
+      puts "Exiting after 3 attemps"
+      abort
     end
   end
+  
   puts "#{response} in #{__method__}"
   json = JSON.parse(response.body)
   access_token = json["access_token"]
@@ -49,7 +50,7 @@ def invite_user(accesstoken, redditUser, slug, permissions)
   # Invites a user to a specified live thread, and sets specific permissions
   uri = URI.parse("https://www.oauth.reddit.com/api/live/#{slug}/invite_contributor/")
 
-  request = Net::HTTP::Post.new(uri.path)
+  request = Net::HTTP::Post.new(uri.path, {'User-Agent' => 'desktop:com.VolunteerLiveTeam.livebot:v1.0.0 (by /u/everyboysfantasy)'})
 
   request.add_field("Authorization", "bearer #{accesstoken}") # Uses our access token for OAuth2
   request.add_field("Content-Type", "application/json")
@@ -61,24 +62,24 @@ def invite_user(accesstoken, redditUser, slug, permissions)
     "type" => "liveupdate_contributor_invite"
   }
 
-  response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
-    tries = 0
-    begin
+  tries = 0
+  begin
+    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
       http.request(request)
-    rescue Net::HTTPTooManyRequests => error
-      tries += 1
-      if tries < 3
-        puts "#{error.message}"
-        sleep(10)
-        retry
-      else
-        puts "Exiting after 3 attemps"
-        abort
-      end
+    end
+  rescue Net::HTTPTooManyRequests => error
+    tries += 1
+    if tries < 3
+      puts "#{error.message}"
+      sleep(10)
+      retry
+    else
+      puts "Exiting after 3 attemps"
+      abort
     end
   end
 
-  puts "#{response.body} in #{__method__}" #remove .body once debugged
+  puts "#{response} in #{__method__}" #remove .body once debugged
 end
 
 def lead_user(accesstoken, redditUser, slug)
@@ -86,7 +87,7 @@ def lead_user(accesstoken, redditUser, slug)
 
   uri = URI.parse("https://www.oauth.reddit.com/api/live/#{slug}/contributors/")
 
-  request = Net::HTTP::Get.new(uri.path)
+  request = Net::HTTP::Get.new(uri.path, {'User-Agent' => 'desktop:com.VolunteerLiveTeam.livebot:v1.0.0 (by /u/everyboysfantasy)'})
 
   request.add_field("Authorization", "bearer #{accesstoken}") # Uses our access token for OAuth2
   #request.add_field("Content-Type", "application/json")
@@ -119,7 +120,7 @@ def update_perms(accesstoken, redditUser, slug, permissions)
   # Updates the permissions for a contributor
   uri = URI.parse("https://www.oauth.reddit.com/api/live/#{slug}/set_contributor_permissions")
 
-  request = Net::HTTP::Post.new(uri.path)
+  request = Net::HTTP::Post.new(uri.path, {'User-Agent' => 'desktop:com.VolunteerLiveTeam.livebot:v1.0.0 (by /u/everyboysfantasy)'})
 
   request.add_field("Authorization", "bearer #{accesstoken}") # Uses our access token for OAuth2
   request.add_field("Content-Type", "application/json")
@@ -131,23 +132,23 @@ def update_perms(accesstoken, redditUser, slug, permissions)
     "type" => "liveupdate_contributor_invite"
   }
 
-  response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
-    tries = 0
-    begin
+  tries = 0
+  begin
+    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
       http.request(request)
-    rescue Net::HTTPTooManyRequests => error
-      tries += 1
-      if tries < 3
-        puts "#{error.message}"
-        sleep(10)
-        retry
-      else
-        puts "Exiting after 3 attemps"
-        abort
-      end
+    end
+  rescue Net::HTTPTooManyRequests => error
+    tries += 1
+    if tries < 3
+      puts "#{error.message}"
+      sleep(10)
+      retry
+    else
+      puts "Exiting after 3 attemps"
+      abort
     end
   end
-  
+
   puts "#{response} in #{__method__}"
 end
 
@@ -160,7 +161,7 @@ class Perms < SlackRubyBot::Bot
   refreshtoken = $config["refresh_token"]
 
   command 'add' do |client, data, msg| # livebot add <slug> <user> <perms>
-    puts "Got an add command."
+    puts "\nGot an add command."
     msg = msg.to_s.match(/.* (.*?) (.*) (.*)/)
     slug = msg[1]
     redditUser = msg[2]
@@ -173,14 +174,14 @@ class Perms < SlackRubyBot::Bot
   end
 
   command 'lead' do |client, data, msg| # livebot lead <slug> <user>
-    puts "Got a lead command."
+    puts "\nGot a lead command."
     msg = msg.to_s.match(/.* (.*?) (.*)/)
     slug = msg[1]
     redditUser = msg[2]
     puts "Thread: #{slug}"
     puts "User: #{redditUser}"
     accesstoken = refreshtoken(refreshtoken)
-    sleep 6 # implement as an error exception for 429 so we only sleep when it fails
+    sleep 6
     lead_user(accesstoken, redditUser, slug)
   end
 end
