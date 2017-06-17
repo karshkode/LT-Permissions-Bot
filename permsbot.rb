@@ -62,9 +62,23 @@ def invite_user(accesstoken, redditUser, slug, permissions)
   }
 
   response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
-    http.request(request)
+    tries = 0
+    begin
+      http.request(request)
+    rescue Net::HTTPTooManyRequests => error
+      tries += 1
+      if tries < 3
+        puts "#{error.message}"
+        sleep(10)
+        retry
+      else
+        puts "Exiting after 3 attemps"
+        abort
+      end
+    end
   end
-  puts "#{response.body} in #{__method__}"
+
+  puts "#{response.body} in #{__method__}" #remove .body once debugged
 end
 
 def lead_user(accesstoken, redditUser, slug)
@@ -118,8 +132,22 @@ def update_perms(accesstoken, redditUser, slug, permissions)
   }
 
   response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
-    http.request(request)
+    tries = 0
+    begin
+      http.request(request)
+    rescue Net::HTTPTooManyRequests => error
+      tries += 1
+      if tries < 3
+        puts "#{error.message}"
+        sleep(10)
+        retry
+      else
+        puts "Exiting after 3 attemps"
+        abort
+      end
+    end
   end
+  
   puts "#{response} in #{__method__}"
 end
 
