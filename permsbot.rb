@@ -14,7 +14,9 @@ class Perms < SlackRubyBot::Bot
 
   refreshtoken = $config["refresh_token"]
 
-  command 'join' do |client, data, msg| # livebot join <slug> <user>
+  command 'join' do |client, data, msg|
+    # livebot join <slug> <user>
+    # Everybody can use it
     puts "\nGot a join command."
     userid = data["user"] # User ID of command sender
     msg = msg.to_s.match(/.* (.*?) (.*)/)
@@ -33,7 +35,9 @@ class Perms < SlackRubyBot::Bot
     end
   end
 
-  command 'add' do |client, data, msg| # livebot add <slug> <user> <perms>
+  command 'add' do |client, data, msg|
+    # livebot add <slug> <user> <perms>
+    # Only admins can use it (at the moment)
     puts "\nGot an add command."
     userid = data["user"] # User ID of command sender
     msg = msg.to_s.match(/.* (.*?) (.*) (.*)/)
@@ -53,7 +57,9 @@ class Perms < SlackRubyBot::Bot
     end
   end
 
-  command 'lead' do |client, data, msg| # livebot lead <slug> <user>
+  command 'lead' do |client, data, msg|
+    # livebot lead <slug> <user>
+    # Only admins can use it (at the moment)
     puts "\nGot a lead command."
     userid = data["user"] # User ID of command sender
     msg = msg.to_s.match(/.* (.*?) (.*)/)
