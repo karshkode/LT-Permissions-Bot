@@ -22,13 +22,11 @@ class Perms < SlackRubyBot::Bot
     redditUser = msg[2]
     puts "Thread: #{slug}"
     puts "User: #{redditUser}"
-    if Permissions.user_check(userid)[:is_contributor] == false # If the user is not on the list of contributors already
-      # Write into whitelist["contributors"] and append thread ID
-      # This will serve as a temporary list of contribs for this particular thread - data-tracking!
+    if Permissions.yaml_contributor == false # If the user is not on the contributors list for our thread
       accesstoken = Permissions.refreshtoken(refreshtoken)
       sleep 3 # implement as an error exception for 429 so we only sleep when it fails
       Permissions.invite_user(accesstoken, redditUser, slug, "-all")
-      add_contributor_to_yaml(userid, slug) # Add user as contributor of our thread to threads.yaml
+      Permissions.add_contributor_to_yaml(userid, slug) # Add user as contributor of our thread to threads.yaml
     else
       client.say(text: "#{redditUser} is already invited to this thread, check your inbox", channel: data.channel) # Can we pull their Slack ID here instead?
       puts "User is already a contributor of the thread"
@@ -48,7 +46,7 @@ class Perms < SlackRubyBot::Bot
       accesstoken = Permissions.refreshtoken(refreshtoken)
       sleep 3
       Permissions.invite_user(accesstoken, redditUser, slug, permissions)
-      add_contributor_to_yaml(userid, slug) # Add user as contributor of our thread to threads.yaml
+      Permissions.add_contributor_to_yaml(userid, slug) # Add user as contributor of our thread to threads.yaml
     else
       client.say(text: "You don't have the permissions to do that!", channel: data.channel)
       puts "User didn't have permissions."
