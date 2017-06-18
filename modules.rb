@@ -231,8 +231,23 @@ module Permissions
       title => title,
     }
     
-    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
-      http.request(request)
+    tries = 0
+    begin
+      response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
+        http.request(request)
+      end
+    rescue Net::HTTPTooManyRequests => error
+      tries += 1
+      if tries < 3
+        puts "#{error.message}"
+        sleep(10)
+        retry
+      else
+        puts "Exiting after 3 attemps"
+        abort
+      end
     end
+    
+    puts "#{response} in #{__method__}"
   end
-end
+end # Module end 
