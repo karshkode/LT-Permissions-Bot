@@ -153,21 +153,21 @@ module Permissions
   end
   
   def self.user_check(userid)
-
+    user_status = {}
     whitelist = YAML.load_file('whitelist.yaml') # Load up our whitelist
     admins = whitelist["admins"] # Load in our admins array
     if admins.include?(userid) # If the list of admins includes our user
-      return true
+      user_status[:is_admin] = true
     else
-      return false
+      user_status = false
     end
     contributors = whitelist["contributors"] # Contributors array for join command
     if contributors.include?(userid) # If the list of contribs includes our user
-      return false # Already invited, #{redditUser}, go check inbox and accept invite
+      user_status[:is_contributor] = true # Already invited, #{redditUser}, go check inbox and accept invite
     else
-      return true # Send contributor invite
+      user_status[:is_contributor] = false # Send contributor invite
     end
-
+    return user_status
   end
 
 end
