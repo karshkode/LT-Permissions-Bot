@@ -151,7 +151,7 @@ module Permissions
 
     puts "#{response} in #{__method__}"
   end
-  
+
   def self.user_check(userid)
     user_status = {}
     whitelist = YAML.load_file('whitelist.yaml') # Load up our whitelist
@@ -159,7 +159,7 @@ module Permissions
     if admins.include?(userid) # If the list of admins includes our user
       user_status[:is_admin] = true
     else
-      user_status = false
+      user_status[:is_admin] = false
     end
     contributors = whitelist["contributors"] # Contributors array for join command
     if contributors.include?(userid) # If the list of contribs includes our user
@@ -167,7 +167,23 @@ module Permissions
     else
       user_status[:is_contributor] = false # Send contributor invite
     end
+    puts user_status
     return user_status
   end
+  def self.add_contributor_to_yaml(userid, slug) # Add Slack user ID to threads.yaml, under an individual thread slug array. If it doesn't exist, create one.
+    # Check if the threads.yaml already has our thread. If it doesn't, create one and go ahead with the ID check
+    # If it does have one, check the slug for our ID, if it exists, done
+    # If the slug doesn't have our ID, add it
+    threads = YAML.load_file('threads.yaml')
 
+    if threads.any? {|key| key.include? slug} == true # Does threads.yaml have our thread? If it does:
+      puts "Thread is already in threads.yaml"
+      if threads[slug].include? userid == true # Does the thread have our contributor? If it does:
+        puts "Contributor is already in #{slug} in threads.yaml"
+      else # If the thread doesn't have our user ID
+        threads[slug] = [userid] # Write to threads, adding our contributor to the thread
+        puts "Added contributor (#{userid}) to #{slug}"
+      end
+    end
+  end
 end
