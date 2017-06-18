@@ -90,8 +90,7 @@ module Permissions
     request = Net::HTTP::Get.new(uri.path, {'User-Agent' => 'desktop:com.VolunteerLiveTeam.livebot:v1.0.0 (by /u/everyboysfantasy)'})
 
     request.add_field("Authorization", "bearer #{accesstoken}") # Uses our access token for OAuth2
-    #request.add_field("Content-Type", "application/json")
-
+    
     response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
       http.request(request)
     end
@@ -204,6 +203,36 @@ module Permissions
     else # If thread doesn't exist in threads.yaml
       data = {slug => []}
       File.open("threads.yaml", "w") {|f| f.write(data.to_yaml)}
+    end
+  end
+
+  def self.create_thread(title, description, *resources)
+    # Create thread with title, description and (optionally) resources. The third arg is an array, but needs to be a string (for Reddit API).
+    # description must be in "raw markdown text"
+    # resources must be in "raw markdown text"
+    # title must be a string no longer than 120 characters
+    
+    if resources == [] # If resources isn't given as an arg (blank)
+      resources = "" # Resources will be nil for Reddit request
+    end
+
+    uri = URI.parse("https://www.oauth.reddit.com/api/live/create")
+
+    request = Net::HTTP::Get.new(uri.path, {'User-Agent' => 'desktop:com.VolunteerLiveTeam.livebot:v1.0.0 (by /u/everyboysfantasy)'})
+
+    request.add_field("Authorization", "bearer #{accesstoken}") # Uses our access token for OAuth2
+    request.add_field("Content-Type", "application/json") # JSON needed for POST requests, not for GET requests
+    
+    request.form_data = {
+      "api_type" => "json",
+      "description" => description,
+      "nsfw" => true,
+      resources => resources,
+      title => title,
+    }
+    
+    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") do |http|
+      http.request(request)
     end
   end
 end
