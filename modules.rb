@@ -226,7 +226,7 @@ module Permissions
     request.form_data = {
       "api_type" => "json",
       "description" => description,
-      "nsfw" => true,
+      "nsfw" => false,
       resources => resources,
       title => title,
     }
