@@ -170,12 +170,29 @@ module Permissions
     puts user_status
     return user_status
   end
+  def self.yaml_contributor(userid, slug)
+    # Check if the threads.yaml has our thread. If it does, check if the thread contains our contributor.
+    # Return true if it does, and false if it doesn't.
+    threads = YAML.load_file('threads.yaml')
+    if threads.any? {|key| key.include? slug} == true # Does threads.yaml have our thread? If it does:
+      puts "Thread is already in threads.yaml"
+      if threads[slug].include? userid == true # Does the thread have our contributor? If it does:
+        return true
+      else # If the thread doesn't include our contributor
+        return false
+      end
+    end
+  end
   def self.add_contributor_to_yaml(userid, slug) # Add Slack user ID to threads.yaml, under an individual thread slug array. If it doesn't exist, create one.
     # Check if the threads.yaml already has our thread. If it doesn't, create one and go ahead with the ID check
     # If it does have one, check the slug for our ID, if it exists, done
     # If the slug doesn't have our ID, add it
     threads = YAML.load_file('threads.yaml')
-
+    if threads == false # If threads.yaml is empty
+      data = {slug => [userid]}
+      File.open("threads.yaml", "w") {|f| f.write(data.to_yaml)} # Write to threads, adding our contributor to the thread
+      return
+    end
     if threads.any? {|key| key.include? slug} == true # Does threads.yaml have our thread? If it does:
       puts "Thread is already in threads.yaml"
       if threads[slug].include? userid == true # Does the thread have our contributor? If it does:
@@ -184,6 +201,9 @@ module Permissions
         threads[slug] = [userid] # Write to threads, adding our contributor to the thread
         puts "Added contributor (#{userid}) to #{slug}"
       end
+    else # If thread doesn't exist in threads.yaml
+      data = {slug => []}
+      File.open("threads.yaml", "w") {|f| f.write(data.to_yaml)}
     end
   end
 end
