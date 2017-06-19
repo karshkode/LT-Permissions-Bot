@@ -95,7 +95,7 @@ module Permissions
       http.request(request)
     end
 
-    responseparsed = JSON.parse(response.body)
+    responseparsed = JSON.parse(response.body) # List of contributors
     contributors = []
     responseparsed.each do |row|
       row["data"]["children"].each do |child|
