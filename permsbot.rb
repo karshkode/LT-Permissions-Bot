@@ -20,12 +20,15 @@ class Perms < SlackRubyBot::Bot
     
     command 'join' do
       desc 'This command allows any user to join a live thread with no permissions.'
+      long_desc "Syntax: `livebot join <slug> <user>`"
     end
     command 'add' do
       desc 'Only available to trusted contributors (see Tyree for more details), this command allows users to add themselves to live threads with certain permissions.'
+      long_desc "Syntax: `livebot add <slug> <user> <perms>`"
     end
     command 'lead' do
       desc 'Only available to admins, this command allows users to designate a lead for a certain live thread, giving them full permissions on that thread.'
+      long_desc "Syntax: `livebot lead <slug> <user>`"
     end
   end
 
